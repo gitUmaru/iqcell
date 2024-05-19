@@ -13,3 +13,18 @@ IQCELL is an integrative platform that includes modules for gene selection, buil
 IQCELL also provides users with a platform to simulate the developmental trajectories of cells.
 We show that dynamic simulations of the inferred GRNs resemble experimentally observed gene expression dynamics and capture the effects of genetic perturbation studies.
 IQCELL offers a versatile tool to infer and simulate GRNs in dynamic biological systems.
+
+
+## Citation
+```
+@article{heydari2022iqcell,
+  title={IQCELL: A platform for predicting the effect of gene perturbations on developmental trajectories using single-cell RNA-seq data},
+  author={Heydari, Tiam and A. Langley, Matthew and Fisher, Cynthia L and Aguilar-Hidalgo, Daniel and Shukla, Shreya and Yachie-Kinoshita, Ayako and Hughes, Michael and M. McNagny, Kelly and Zandstra, Peter W},
+  journal={PLoS computational biology},
+  volume={18},
+  number={2},
+  pages={e1009907},
+  year={2022},
+  publisher={Public Library of Science San Francisco, CA USA}
+}
+```
