@@ -1,18 +1,30 @@
-# pip install iqcell
-from iqcell.preprocessing import select_highly_variable_genes, correct_dropout
-from iqcell.network_generation import generate_interaction_network
-from iqcell.binarization import binarize_expression
-from iqcell.hierarchy_generation import generate_gene_hierarchy
-from iqcell.reasoning_engine import implement_reasoning_engine
-import iqcell.utils
+# pip install iqcell==2.*
+import iqcell
 
+# Load scRNA-seq data
 scRNA_data = iqcell.utils.readdata(
-    expression='examples/data/espression.csv',
+    expression="examples/data/expression.csv",
     pseudotime="examples/data/pseudotime.csv"
 )
-highly_variable_genes = select_highly_variable_genes(scRNA_data)
-corrected_data = correct_dropout(scRNA_data)
-interaction_network = generate_interaction_network(corrected_data)
-binarized_data = binarize_expression(corrected_data)
-gene_hierarchy = generate_gene_hierarchy(interaction_network, binarized_data)
-predictions = implement_reasoning_engine(interaction_network, gene_hierarchy)
+
+# Preprocess data
+highly_variable_genes = iqcell.preprocessing.select_highly_variable_genes(scRNA_data) # use pyScenic
+scRNA_data = iqcell.utils.select(genes=highly_variable_genes, data=scRNA_data)
+
+corrected_data = iqcell.preprocessing.correct_dropout(scRNA_data) # use MAGIC
+
+# Binarize expression data
+binarizer = iqcell.binarization.KMeans()
+binarized_data = binarizer.discretize(corrected_data)
+
+
+# Implement reasoning engine
+z3 = iqcell.logic_engine.Z3(data=binarized_data)
+predictions_z3 = z3.predict()
+
+binn = iqcell.logic_engine.BINN(data=binarized_data)
+predictions_binn = binn.predict()
+
+# Output predictions
+print("Z3 Predictions:", predictions_z3)
+print("BINN Predictions:", predictions_binn)
