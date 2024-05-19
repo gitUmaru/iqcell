@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite the following article."
+authors:
+  - family-names: Heydari
+    given-names: Tiam
+  - family-names: Langley
+    given-names: Matthew A.
+  - family-names: Fisher
+    given-names: Cynthia L.
+  - family-names: Aguilar-Hidalgo
+    given-names: Daniel
+  - family-names: Shukla
+    given-names: Shreya
+  - family-names: Yachie-Kinoshita
+    given-names: Ayako
+  - family-names: Hughes
+    given-names: Michael
+  - family-names: McNagny
+    given-names: Kelly M.
+  - family-names: Zandstra
+    given-names: Peter W.
+title: "IQCELL: A platform for predicting the effect of gene perturbations on developmental trajectories using single-cell RNA-seq data"
+date-released: 2022-02-01
+doi: 10.1371/journal.pcbi.1009907
+url: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009907
+journal: "PLoS Computational Biology"
+volume: 18
+issue: 2
+pages: e1009907
+publisher: "Public Library of Science"
