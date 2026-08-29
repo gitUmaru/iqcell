@@ -1,5 +1,10 @@
 # Single-Cell RNA Sequencing (scRNA-seq) and the Goals of IQCELL
 
+> **TL;DR:** scRNA-seq measures gene expression one cell at a time, revealing
+> cell-to-cell differences that bulk sequencing averages away. IQCELL uses this
+> data to infer, simulate, and study executable logical gene regulatory
+> networks in developing cells.
+
 ## What is scRNA-seq?
 
 Single-cell RNA sequencing (scRNA-seq) is a technique for measuring gene
@@ -12,6 +17,12 @@ hides the fact that a tissue is a mixture of many different cell types and
 cell states. scRNA-seq instead isolates each cell separately, captures its RNA,
 and sequences it, producing a per-cell profile of which genes are on and how
 strongly they are expressed.
+
+| Aspect | Bulk RNA-seq | scRNA-seq |
+| --- | --- | --- |
+| Input | Thousands or millions of cells pooled together | Each cell isolated separately |
+| Readout | *Average* expression across all cells | Per-cell profile of gene expression |
+| Heterogeneity | Hidden by the average | Revealed cell by cell |
 
 ### The typical workflow
 
