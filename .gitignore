@@ -163,3 +163,4 @@ cython_debug/
 .beeline/
 examples/data/beeline/
 examples/data/beeline_notebook/
+examples/data/beeline_gsd/
