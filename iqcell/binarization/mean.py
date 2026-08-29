@@ -1,4 +1,4 @@
-from base_class import Binarizer
+from .base_class import Binarizer
 import numpy as np
 import anndata as ad
 

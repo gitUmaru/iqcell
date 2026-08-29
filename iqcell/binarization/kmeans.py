@@ -1,4 +1,4 @@
-from base_class import Binarizer
+from .base_class import Binarizer
 from sklearn.cluster import KMeans
 from tqdm import tqdm
 import numpy as np

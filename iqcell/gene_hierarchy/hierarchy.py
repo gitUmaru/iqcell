@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.ndimage import uniform_filter1d
-from base_class import GeneHierarchy
+from .base_class import GeneHierarchy
 import anndata as ad
 
 class IqCellGeneHierarchy(GeneHierarchy):
