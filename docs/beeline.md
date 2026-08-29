@@ -2,7 +2,11 @@
 
 `iqcell.beeline` wraps the real [Murali-group/BEELINE](https://github.com/Murali-group/Beeline)
 benchmarking pipeline so you can score GRN-inference algorithms on IQCELL's
-synthetic ground-truth networks. The bridge:
+synthetic ground-truth networks.
+
+## Overview
+
+The bridge does four things:
 
 1. Exports a `SyntheticGRNGenerator` into BEELINE's expected input layout.
 2. Generates a BEELINE-compatible YAML config.
@@ -12,6 +16,21 @@ synthetic ground-truth networks. The bridge:
 A pure-python scorer (`score_ranking`) computes AUPRC/AUROC **without** a
 BEELINE or Docker install, so you can get results immediately and only set up
 the full pipeline when you need the real inference algorithms.
+
+### Public API at a glance
+
+All names below are importable from `iqcell.beeline`:
+
+| Name | Kind | Purpose |
+|------|------|---------|
+| `export_beeline_inputs` | function | Write `ExpressionData.csv`, `PseudoTime.csv`, and `refNetwork.csv` |
+| `write_config` | function | Write the BEELINE-compatible YAML config |
+| `BeelineRunner` | class | Drive a cloned BEELINE repo via subprocess |
+| `BeelineStatus` | dataclass | Result of `BeelineRunner.check_available()` |
+| `BeelineNotAvailableError` | exception | Raised when BEELINE/Docker is not usable for a run |
+| `read_ranked_edges` | function | Read a `rankedEdges.csv` into a DataFrame |
+| `parse_evaluation` | function | Collect AUPRC/AUROC/EPR from evaluation CSVs |
+| `score_ranking` | function | Pure-python AUPRC/AUROC scorer (no BEELINE needed) |
 
 ## TL;DR
 
@@ -29,6 +48,8 @@ python examples/beeline_benchmark.py --beeline-repo ./.beeline
 BEELINE reads inputs from `input_dir/<dataset_id>/<run_id>/` and writes outputs
 to `output_dir/<dataset_id>/<run_id>/<algorithm_id>/rankedEdges.csv`.
 
+The pipeline uses these files:
+
 | File | Location | Format |
 |------|----------|--------|
 | `ExpressionData.csv` | `<dataset_id>/<run_id>/` | genes × cells; gene names as row index, cell ids as columns |
@@ -40,6 +61,8 @@ to `output_dir/<dataset_id>/<run_id>/<algorithm_id>/rankedEdges.csv`.
 YAML.
 
 ## Step 1 — export synthetic data
+
+Export the generator's data and write a config file:
 
 ```python
 from iqcell.simulation import GRNSpec, SyntheticGRNGenerator, NoiseConfig
@@ -57,13 +80,21 @@ paths = export_beeline_inputs(gen, "work/inputs", dataset_id="synthetic", run_id
 write_config("work/config.yaml", input_dir="work/inputs", output_dir="work/outputs")
 ```
 
-`export_beeline_inputs` uses the noisy `gen.expression` by default; pass
-`use_clean=True` to export the noise-free signal instead. It calls `simulate()`
-for you if the generator has not been run yet.
+Notes on `export_beeline_inputs`:
 
-By default `write_config` enables three algorithms: **PIDC**
-(`grnbeeline/pidc:base`), **GENIE3** (`grnbeeline/arboreto:base`), and
-**PEARSON** (`local`, no Docker). Override with the `algorithms=` argument:
+- It uses the noisy `gen.expression` by default. Pass `use_clean=True` to
+  export the noise-free signal instead.
+- It calls `simulate()` for you if the generator has not been run yet.
+
+### Choosing algorithms
+
+By default `write_config` enables three algorithms:
+
+- **PIDC** (`grnbeeline/pidc:base`)
+- **GENIE3** (`grnbeeline/arboreto:base`)
+- **PEARSON** (`local`, no Docker)
+
+Override the defaults with the `algorithms=` argument:
 
 ```python
 write_config(
@@ -80,25 +111,28 @@ write_config(
 ## Step 2 — set up BEELINE (one time)
 
 BEELINE runs each algorithm in a Docker container, so **Docker must be
-installed and running**. The bootstrap script clones the repo and pulls the
-algorithm images:
+installed and running**.
 
-```bash
-scripts/bootstrap_beeline.sh            # clones into ./.beeline
-scripts/bootstrap_beeline.sh /opt/beeline   # or a custom location
-```
+1. Clone the repo and pull the algorithm images with the bootstrap script:
 
-BEELINE's Python entry points also need its conda environment. Following the
-upstream README:
+   ```bash
+   scripts/bootstrap_beeline.sh            # clones into ./.beeline
+   scripts/bootstrap_beeline.sh /opt/beeline   # or a custom location
+   ```
 
-```bash
-# inside the checkout
-bash utils/setupAnacondaVENV.sh
-source ~/miniconda3/etc/profile.d/conda.sh
-conda activate BEELINE
-```
+2. Set up BEELINE's conda environment, which its Python entry points also
+   need. Following the upstream README:
+
+   ```bash
+   # inside the checkout
+   bash utils/setupAnacondaVENV.sh
+   source ~/miniconda3/etc/profile.d/conda.sh
+   conda activate BEELINE
+   ```
 
 ## Step 3 — run inference + evaluation
+
+Run the algorithms and read back the metrics:
 
 ```python
 from iqcell.beeline import BeelineRunner, parse_evaluation
@@ -138,9 +172,11 @@ tuples, and uses scikit-learn if available, otherwise a pure-python fallback.
 
 ## End-to-end example
 
-`examples/beeline_benchmark.py` runs the whole loop. Without `--beeline-repo`
-it exports inputs and demonstrates the fallback scorer; with a bootstrapped
-checkout it runs the real Docker-backed pipeline:
+`examples/beeline_benchmark.py` runs the whole loop:
+
+- Without `--beeline-repo`, it exports inputs and demonstrates the fallback
+  scorer.
+- With a bootstrapped checkout, it runs the real Docker-backed pipeline:
 
 ```bash
 python examples/beeline_benchmark.py --beeline-repo ./.beeline --n-cells 500
